@@ -161,12 +161,32 @@ var
 begin
   Result := True;
   for Index := 0 to FList.Count -1 do
+  begin
     if SameText(Process[Index].Name, Name) then begin
       atIndex := Index;
       Exit;
     end;// if SameText(Process[Index].Name, Name) then begin
+  end,
   Result := False;
 end;// function TDGProcessList.Exists(const Name: AnsiString;
+
+function TDGProcessList.regex(const Name: AnsiString): Boolean;
+var
+  Index: Integer;
+begin
+  regexpr := TRegEx.Create('^.*\b(\w+)\b\sworld',[roIgnoreCase,roMultiline]);
+  Result := True;
+  for Index := 0 to FList.Count -1 do
+  begin
+    if SameText(Process[Index].Name, Name) then begin
+      atIndex := Index;
+      Exit;
+    end;// if SameText(Process[Index].Name, Name) then begin
+  end,
+  Result := False;
+end;// function TDGProcessList.Exists(const Name: AnsiString;
+
+
 
 function TDGProcessList.GetProcessFileName(dwProcessID: DWORD): AnsiString;
 var
@@ -178,7 +198,7 @@ begin
   try
     SetLength(Result, MAX_PATH);
     if Handle <> 0 then begin
-      if GetModuleFileNameEx(Handle, 0, PAnsiChar(Result), MAX_PATH) > 0 then
+      if GetModuleFileNameExA(Handle, 0, PAnsiChar(Result), MAX_PATH) > 0 then
         SetLength(Result, StrLen(PAnsiChar(Result)))
       else
         Result := EmptyStr;
@@ -210,7 +230,7 @@ begin
   else
     Flags := SHGFI_ICON or SHGFI_LARGEICON or SHGFI_SYSICONINDEX;
   Result := TIcon.Create;
-  SHGetFileInfo(PAnsiChar(ExeName), 0, FileInfo, SizeOf(FileInfo), Flags);
+  SHGetFileInfoA(PAnsiChar(ExeName), 0, FileInfo, SizeOf(FileInfo), Flags);
   Result.Handle := FileInfo.hIcon;
 end;// function TDGProcessList.GetProcessIcon(const ExeName: AnsiString;
 
@@ -317,7 +337,7 @@ begin
       if (UserSize <> 0) and (DomainSize <> 0) then begin
         SetLength(UserName, UserSize);
         SetLength(Domain, DomainSize);
-        if LookupAccountSid(nil, tokUser.User.Sid, PAnsiChar(UserName), UserSize,
+        if LookupAccountSidA(nil, tokUser.User.Sid, PAnsiChar(UserName), UserSize,
             PAnsiChar(Domain), DomainSize, sidNameUse) then begin
           Result := True;
           UserName := StrPas(PAnsiChar(UserName));
