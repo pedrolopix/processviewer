@@ -7,12 +7,13 @@ uses
   uDGProcessList in 'uDGProcessList.pas';
 
 var
-  Index: Integer;
+  exists: boolean;
+  index: integer;
   ProcessList: TDGProcessList;
 begin
   { TODO -oUser -cConsole Main : Insert code here }
   //http://www.delphigeist.com/2010/03/process-list.html
-  if ParamCount <> 1 then
+  if ParamCount <  1 then
   begin
     ExitCode := 0;
     Exit;
@@ -20,8 +21,16 @@ begin
 
   ProcessList := TDGProcessList.Create;
   ProcessList.Refresh;
-  ProcessList.Exists(ParamStr(1), Index);
-  if (Index > 0) and (Index < ProcessList.Count) then
+  if FindCmdLineSwitch('r') then
+  begin
+    exists:= ProcessList.regex(ParamStr(1));
+  end else
+  begin
+    exists:= ProcessList.Exists(ParamStr(1),index);
+  end;
+
+
+  if (exists) then
   begin
     ExitCode := 1;
     WriteLn('found');

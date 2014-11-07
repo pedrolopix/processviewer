@@ -9,6 +9,13 @@ The following command line checks if bds.exe is running.
 
 If bds.exe is running, processviewer.exe exits with 1, and prints out "found". Otherwise, it exits with 0, and prints out "not found".
 
+Or find processes by reg expression (switch -r):
+
+    processviewer.exe sql.* -r
+
+If sqlbrowser.exe or sqlserv.exe is running, processviewer.exe exits with 1, and prints out "found". Otherwise, it exits with 0, and prints out "not found".
+
+
 So in your Inno Setup script, you can include processviewer.exe in [Files] sections like below,
 
 	[Files]

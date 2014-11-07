@@ -62,6 +62,7 @@ type
       var UserName, Domain: AnsiString): Boolean;
     function GetProcessStartDateTime(dwProcessID: DWORD): TDateTime;
     procedure SetProcessRec(INDEX: Integer; const Value: TDGProcessRec);
+
   PUBLIC// methods
     function Count: Integer;
     function TerminateProcess(dwProcessID: DWORD): Boolean; OVERLOAD;
@@ -80,6 +81,7 @@ type
     procedure Clear;
     procedure Delete(Index: Integer);
     procedure Refresh;
+    function regex(Name: AnsiString): Boolean;
   PUBLIC// properties
     property Process[INDEX: Integer]: TDGProcessRec
       read GetProcessRec write SetProcessRec; DEFAULT;
@@ -89,6 +91,10 @@ type
   end;// TDGProcessList = class
 
 implementation
+
+uses
+  System.RegularExpressions;
+
 
 { TDGProcessList }
 
@@ -154,6 +160,7 @@ begin
   Result := Exists(Name, Index);
 end;// function TDGProcessList.Exists(const Name: AnsiString): Boolean;
 
+
 function TDGProcessList.Exists(const Name: AnsiString;
   var atIndex: Integer): Boolean;
 var
@@ -166,23 +173,25 @@ begin
       atIndex := Index;
       Exit;
     end;// if SameText(Process[Index].Name, Name) then begin
-  end,
+  end;
   Result := False;
 end;// function TDGProcessList.Exists(const Name: AnsiString;
 
-function TDGProcessList.regex(const Name: AnsiString): Boolean;
+function TDGProcessList.regex(Name: AnsiString): Boolean;
 var
   Index: Integer;
+  regexpr: TRegEx;
 begin
-  regexpr := TRegEx.Create('^.*\b(\w+)\b\sworld',[roIgnoreCase,roMultiline]);
+  name:= LowerCase(name);
+  regexpr := TRegEx.Create(name,[roIgnoreCase,roMultiline]);
   Result := True;
   for Index := 0 to FList.Count -1 do
   begin
-    if SameText(Process[Index].Name, Name) then begin
-      atIndex := Index;
+    if regexpr.IsMatch(LowerCase(Process[Index].Name), Name) then begin
+      Result := true;
       Exit;
     end;// if SameText(Process[Index].Name, Name) then begin
-  end,
+  end;
   Result := False;
 end;// function TDGProcessList.Exists(const Name: AnsiString;
 
